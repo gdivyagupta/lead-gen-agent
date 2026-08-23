@@ -1,0 +1,57 @@
+name: Scheduled lead-gen run
+
+on:
+  schedule:
+    # 09:00 UTC daily — adjust to taste.
+    - cron: "0 9 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Refuse to run without pre-authorized human gates
+        run: |
+          if [ -z "${{ vars.CONFIRMED_PROFILE }}" ]; then
+            echo "CONFIRMED_PROFILE repo variable is unset. A human must" \
+                 "set it to the active profile's name to authorize" \
+                 "scheduled runs. Refusing to run."
+            exit 1
+          fi
+          if [ -z "${{ vars.APPROVED_SPEND }}" ]; then
+            echo "APPROVED_SPEND repo variable is unset. Refusing to run."
+            exit 1
+          fi
+
+      - name: Write Google credentials from secrets
+        run: |
+          mkdir -p config
+          printf '%s' '${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}' > config/google_oauth_client_secret.json
+          printf '%s' '${{ secrets.GOOGLE_TOKEN }}' > config/google_token.json
+
+      - name: Run pipeline (draft-only unless ALLOW_SEND=true)
+        env:
+          APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          GMAIL_SENDER_ADDRESS: ${{ vars.GMAIL_SENDER_ADDRESS }}
+          GOOGLE_OAUTH_CLIENT_SECRET_FILE: config/google_oauth_client_secret.json
+          GOOGLE_TOKEN_FILE: config/google_token.json
+        run: |
+          SEND_FLAG=""
+          if [ "${{ vars.ALLOW_SEND }}" = "true" ]; then
+            SEND_FLAG="--send"
+          fi
+          python scripts/run_pipeline.py \
+            --confirm-profile "${{ vars.CONFIRMED_PROFILE }}" \
+            --approve-spend "${{ vars.APPROVED_SPEND }}" \
+            $SEND_FLAG

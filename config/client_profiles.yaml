@@ -1,0 +1,43 @@
+# WHO WE TARGET AND HOW WE PITCH THEM.
+#
+# Exactly one profile may have `status: active` for the pipeline to run.
+# Both profiles below ship as `draft` on purpose: choosing a client profile
+# is a human decision, not something this agent makes for you. Edit one
+# profile's status to `active`, then run:
+#   python scripts/run_pipeline.py --confirm-profile <name>
+#
+# Feel free to edit these two, delete them, or add your own — the schema
+# is what matters, not these example values.
+
+profiles:
+  - name: saas-founders-seed-series-a
+    status: draft
+    description: "Seed-to-Series A B2B SaaS founders, 5-50 employees"
+    apify:
+      actor_id: apify/apollo-io-scraper
+      search_input:
+        personTitles: ["Founder", "Co-Founder", "CEO"]
+        organizationNumEmployeesRanges: ["1,50"]
+        industry: ["Computer Software"]
+      max_free_results: 25
+    email:
+      sender_name: ""
+      value_prop: "help early-stage SaaS teams cut customer acquisition cost with done-for-you outbound"
+      cta: "a 15-minute call this week"
+      tone: "direct, founder-to-founder, no fluff"
+
+  - name: ecommerce-brands
+    status: draft
+    description: "DTC e-commerce brands doing $1M-$10M revenue"
+    apify:
+      actor_id: apify/apollo-io-scraper
+      search_input:
+        personTitles: ["Founder", "CEO", "Head of Growth"]
+        organizationNumEmployeesRanges: ["11,50"]
+        industry: ["Retail"]
+      max_free_results: 25
+    email:
+      sender_name: ""
+      value_prop: "grow repeat purchase rate through better lifecycle email"
+      cta: "a quick intro call"
+      tone: "warm, consultative"
