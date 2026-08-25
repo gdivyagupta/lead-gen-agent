@@ -5,6 +5,7 @@ import logging
 import re
 
 from google import genai
+from google.genai import types
 
 from .config import ClientProfile, Settings
 from .models import EmailDraft, Lead
@@ -66,6 +67,13 @@ def write_outreach_email(
     response = client.models.generate_content(
         model=settings.gemini_model,
         contents=prompt,
+        # Writing a short templated cold email needs no deep reasoning.
+        # Gemini 3.1 Pro defaults to "high" thinking (thousands of hidden
+        # tokens billed as output) unless told otherwise, so pin this low
+        # to keep per-email cost close to the visible output size.
+        config=types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(thinking_level=types.ThinkingLevel.MINIMAL)
+        ),
     )
     data = _extract_json(response.text)
     return EmailDraft(subject=data["subject"].strip(), body=data["body"].strip())
