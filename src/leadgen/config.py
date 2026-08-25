@@ -55,6 +55,7 @@ class Settings:
     google_token_file: Path
     google_sheet_id: str
     gmail_sender_address: str
+    calendar_url: str
     github_token: str
     github_repo_name: str
     github_visibility: str
@@ -76,6 +77,7 @@ def load_settings(env_file: Path | None = None) -> Settings:
         google_token_file=_path("GOOGLE_TOKEN_FILE"),
         google_sheet_id=os.environ.get("GOOGLE_SHEET_ID", ""),
         gmail_sender_address=os.environ.get("GMAIL_SENDER_ADDRESS", ""),
+        calendar_url=os.environ.get("CALENDAR_URL", ""),
         github_token=os.environ.get("GITHUB_TOKEN", ""),
         github_repo_name=os.environ.get("GITHUB_REPO_NAME", "lead-gen-agent"),
         github_visibility=os.environ.get("GITHUB_VISIBILITY", "private"),

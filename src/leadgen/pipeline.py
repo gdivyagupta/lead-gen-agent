@@ -55,14 +55,24 @@ def run(
         try:
             if send:
                 gmail_sender.send_email(
-                    creds, settings.gmail_sender_address, lead.email, draft.subject, draft.body
+                    creds,
+                    settings.gmail_sender_address,
+                    lead.email,
+                    draft.subject,
+                    draft.body,
+                    draft.body_html,
                 )
                 from datetime import datetime, timezone
 
                 sent_at = datetime.now(timezone.utc).isoformat()
             else:
                 gmail_draft_id = gmail_sender.create_draft(
-                    creds, settings.gmail_sender_address, lead.email, draft.subject, draft.body
+                    creds,
+                    settings.gmail_sender_address,
+                    lead.email,
+                    draft.subject,
+                    draft.body,
+                    draft.body_html,
                 )
         except Exception:
             logger.exception("Gmail step failed for %s, logging without it", lead.email)

@@ -51,6 +51,32 @@ def get_existing_emails(creds: Credentials, sheet_id: str) -> set[str]:
     return {row[0].strip().lower() for row in values[1:] if row}
 
 
+def get_all_rows(creds: Credentials, sheet_id: str) -> list[list[str]]:
+    """Returns all data rows (excluding the header), in sheet order."""
+    service = _sheets_service(creds)
+    result = (
+        service.spreadsheets()
+        .values()
+        .get(spreadsheetId=sheet_id, range="A:L")
+        .execute()
+    )
+    values = result.get("values", [])
+    return values[1:] if values else []
+
+
+def update_row(creds: Credentials, sheet_id: str, row_number: int, row: SheetRow) -> None:
+    """row_number is 1-indexed including the header (so the first data row
+    is row_number=2), matching what get_all_rows's enumeration + 2 gives you.
+    """
+    service = _sheets_service(creds)
+    service.spreadsheets().values().update(
+        spreadsheetId=sheet_id,
+        range=f"A{row_number}:L{row_number}",
+        valueInputOption="RAW",
+        body={"values": [row.as_row()]},
+    ).execute()
+
+
 def append_rows(creds: Credentials, sheet_id: str, rows: list[SheetRow]) -> None:
     if not rows:
         return

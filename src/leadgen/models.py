@@ -22,6 +22,7 @@ class Lead:
 class EmailDraft:
     subject: str
     body: str
+    body_html: str
 
 
 @dataclass
