@@ -44,6 +44,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
           GMAIL_SENDER_ADDRESS: ${{ vars.GMAIL_SENDER_ADDRESS }}
+          CALENDAR_URL: ${{ vars.CALENDAR_URL }}
           GOOGLE_OAUTH_CLIENT_SECRET_FILE: config/google_oauth_client_secret.json
           GOOGLE_TOKEN_FILE: config/google_token.json
         run: |
@@ -53,5 +54,6 @@ jobs:
           fi
           python scripts/run_pipeline.py \
             --confirm-profile "${{ vars.CONFIRMED_PROFILE }}" \
+            --limit 50 \
             --approve-spend "${{ vars.APPROVED_SPEND }}" \
             $SEND_FLAG
