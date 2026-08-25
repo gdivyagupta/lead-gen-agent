@@ -34,11 +34,17 @@ retry logic, sheet formatting) runs on its own.
 
 ## One-time setup (you need to do this — these are credentials, not decisions)
 
-1. **Apify**: sign up at apify.com, grab an API token, and pick/build an
-   actor that scrapes the kind of lead list you want (e.g. an Apollo.io or
-   LinkedIn search scraper). Put the token in `.env` as `APIFY_API_TOKEN`
-   and the actor id as `APIFY_ACTOR_ID` (or set per-profile in
-   `client_profiles.yaml`, which overrides the global default).
+1. **Apify**: sign up at apify.com and grab an API token → `.env` as
+   `APIFY_API_TOKEN`. `config/client_profiles.yaml` defaults to
+   [`microworlds/leads-finder`](https://apify.com/microworlds/leads-finder)
+   (an Apollo-alternative people/company search actor, ~20M runs on the
+   platform) — its real input schema (field names like
+   `contact_job_titles`, `company_industry`, `company_num_employees_range`)
+   was pulled live from the Apify API and is what `apify_source.py` and
+   the example profiles are built against. Swap to a different actor per
+   profile by changing `apify.actor_id` and `apify.search_input` — just
+   check that actor's own input schema first, since field names aren't
+   standardized across actors.
 2. **Gemini**: get an API key from Google AI Studio (aistudio.google.com).
    Put it in `.env` as `GEMINI_API_KEY`.
 3. **Google Sheets + Gmail**: create a Google Cloud project, enable the

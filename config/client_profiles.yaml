@@ -10,15 +10,20 @@
 # is what matters, not these example values.
 
 profiles:
+  # actor_id/search_input below are verified against the real input schema
+  # of apify.com/microworlds/leads-finder (fetched live from the Apify API,
+  # not guessed). If you switch actors, re-check the schema in the Apify
+  # Console — every actor's input field names differ.
   - name: saas-founders-seed-series-a
     status: draft
     description: "Seed-to-Series A B2B SaaS founders, 5-50 employees"
     apify:
-      actor_id: apify/apollo-io-scraper
+      actor_id: microworlds/leads-finder
       search_input:
-        personTitles: ["Founder", "Co-Founder", "CEO"]
-        organizationNumEmployeesRanges: ["1,50"]
-        industry: ["Computer Software"]
+        contact_job_titles: ["Founder", "Co-Founder", "CEO"]
+        company_num_employees_range: ["1-10", "11-20", "21-50"]
+        company_industry: ["Computer Software"]
+        email_status: ["verified"]
       max_free_results: 25
     email:
       sender_name: ""
@@ -30,11 +35,12 @@ profiles:
     status: draft
     description: "DTC e-commerce brands doing $1M-$10M revenue"
     apify:
-      actor_id: apify/apollo-io-scraper
+      actor_id: microworlds/leads-finder
       search_input:
-        personTitles: ["Founder", "CEO", "Head of Growth"]
-        organizationNumEmployeesRanges: ["11,50"]
-        industry: ["Retail"]
+        contact_job_titles: ["Founder", "CEO", "Head of Growth"]
+        company_num_employees_range: ["11-20", "21-50"]
+        company_industry: ["Retail"]
+        email_status: ["verified"]
       max_free_results: 25
     email:
       sender_name: ""

@@ -9,11 +9,14 @@ from .models import Lead
 
 logger = logging.getLogger(__name__)
 
-# Common field name variants across popular lead-scraper actors. We don't
-# know in advance which actor a given profile uses, so we try a short list
-# of likely keys rather than hard-coding one actor's schema.
+# Field names verified against the default actor (microworlds/leads-finder)
+# by fetching its live input/output schema from the Apify API, plus a few
+# common variants seen on other popular lead-scraper actors in case a
+# profile is pointed at a different one.
 _NAME_KEYS = ["full_name", "fullName", "name"]
-_TITLE_KEYS = ["title", "headline", "job_title", "jobTitle"]
+_FIRST_NAME_KEYS = ["first_name", "firstName"]
+_LAST_NAME_KEYS = ["last_name", "lastName"]
+_TITLE_KEYS = ["title", "headline", "job_title", "jobTitle", "position"]
 _COMPANY_KEYS = ["company", "organization_name", "organizationName", "company_name"]
 _EMAIL_KEYS = ["email", "email_address", "emailAddress"]
 _LINKEDIN_KEYS = ["linkedin_url", "linkedinUrl", "linkedin"]
@@ -27,9 +30,17 @@ def _first(d: dict, keys: list[str]) -> str:
     return ""
 
 
+def _full_name(item: dict) -> str:
+    direct = _first(item, _NAME_KEYS)
+    if direct:
+        return direct
+    first, last = _first(item, _FIRST_NAME_KEYS), _first(item, _LAST_NAME_KEYS)
+    return f"{first} {last}".strip()
+
+
 def _normalize(item: dict, profile_name: str) -> Lead:
     return Lead(
-        full_name=_first(item, _NAME_KEYS),
+        full_name=_full_name(item),
         title=_first(item, _TITLE_KEYS),
         company=_first(item, _COMPANY_KEYS),
         email=_first(item, _EMAIL_KEYS),
@@ -57,6 +68,12 @@ def fetch_leads(settings: Settings, profile: ClientProfile, max_results: int) ->
         )
 
     run_input = dict(profile.apify_search_input)
+    # "max_result" is this actor's real cap field (verified against its
+    # input schema); the other two are included for compatibility if a
+    # profile is pointed at a different actor that uses those names
+    # instead. Extra unrecognized fields are harmless — Apify actors
+    # ignore input keys they don't define.
+    run_input.setdefault("max_result", max_results)
     run_input.setdefault("maxItems", max_results)
     run_input.setdefault("totalRecordsCount", max_results)
 
