@@ -1,49 +1,60 @@
 # WHO WE TARGET AND HOW WE PITCH THEM.
 #
 # Exactly one profile may have `status: active` for the pipeline to run.
-# Both profiles below ship as `draft` on purpose: choosing a client profile
-# is a human decision, not something this agent makes for you. Edit one
-# profile's status to `active`, then run:
-#   python scripts/run_pipeline.py --confirm-profile <name>
+# Choosing/activating a profile is a human decision — this file only ever
+# gets a status flip when you explicitly ask for it in conversation or
+# edit it yourself; the agent never silently switches targets. A second
+# gate still applies at run time: --confirm-profile <name> must match.
 #
-# Feel free to edit these two, delete them, or add your own — the schema
-# is what matters, not these example values.
+# actor_id/search_input below are verified against the real input schema
+# of apify.com/microworlds/leads-finder (fetched live from the Apify API,
+# not guessed). If you switch actors, re-check that actor's own schema in
+# the Apify Console — field names aren't standardized across actors.
 
 profiles:
-  # actor_id/search_input below are verified against the real input schema
-  # of apify.com/microworlds/leads-finder (fetched live from the Apify API,
-  # not guessed). If you switch actors, re-check the schema in the Apify
-  # Console — every actor's input field names differ.
-  - name: saas-founders-seed-series-a
-    status: draft
-    description: "Seed-to-Series A B2B SaaS founders, 5-50 employees"
+  - name: home-service-trades-us
+    status: active
+    description: >
+      US-based HVAC, plumbing, electrical & cleaning companies — solo
+      operators and small local businesses (not national franchises or
+      large regional players) who need lead generation, appointment
+      setting, and AI agent workflow management.
     apify:
       actor_id: microworlds/leads-finder
       search_input:
-        contact_job_titles: ["Founder", "Co-Founder", "CEO"]
-        company_num_employees_range: ["1-10", "11-20", "21-50"]
-        company_industry: ["Computer Software"]
+        # No exact HVAC/plumbing/cleaning category exists in this actor's
+        # industry taxonomy, so industry is a broad net (trades tend to
+        # fall under Construction; cleaning under Facilities/Consumer
+        # Services) and `keywords` does the real narrowing.
+        keywords:
+          [
+            "HVAC",
+            "heating and cooling",
+            "plumbing",
+            "plumber",
+            "electrician",
+            "electrical contractor",
+            "cleaning service",
+            "residential cleaning",
+            "commercial cleaning",
+            "janitorial",
+          ]
+        company_industry: ["Construction", "Facilities Services", "Consumer Services"]
+        # Smallest two buckets = solo operators and small local shops,
+        # not multi-location or franchise players.
+        company_num_employees_range: ["1-10", "11-20"]
+        company_locations: ["United States"]
+        contact_job_titles:
+          ["Owner", "Owner Operator", "Founder", "President", "General Manager"]
         email_status: ["verified"]
       max_free_results: 25
     email:
-      sender_name: ""
-      value_prop: "help early-stage SaaS teams cut customer acquisition cost with done-for-you outbound"
-      cta: "a 15-minute call this week"
-      tone: "direct, founder-to-founder, no fluff"
-
-  - name: ecommerce-brands
-    status: draft
-    description: "DTC e-commerce brands doing $1M-$10M revenue"
-    apify:
-      actor_id: microworlds/leads-finder
-      search_input:
-        contact_job_titles: ["Founder", "CEO", "Head of Growth"]
-        company_num_employees_range: ["11-20", "21-50"]
-        company_industry: ["Retail"]
-        email_status: ["verified"]
-      max_free_results: 25
-    email:
-      sender_name: ""
-      value_prop: "grow repeat purchase rate through better lifecycle email"
-      cta: "a quick intro call"
-      tone: "warm, consultative"
+      sender_name: "Divya Gupta"
+      value_prop: >
+        fill their calendar with qualified jobs — done-for-you lead
+        generation, appointment setting, and an AI agent that handles
+        intake-to-booking so they stop losing jobs to slow follow-up
+      cta: "a 15-minute call to see if it's a fit"
+      tone: >
+        direct, respects their time, speaks like someone who understands
+        a trades business day-to-day — no corporate jargon, no fluff
