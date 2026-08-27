@@ -38,14 +38,28 @@ profiles:
             "residential cleaning",
             "commercial cleaning",
             "janitorial",
+            "handyman",
+            "roofing",
+            "landscaping",
+            "pest control",
           ]
         company_industry: ["Construction", "Facilities Services", "Consumer Services"]
-        # Smallest two buckets = solo operators and small local shops,
-        # not multi-location or franchise players.
-        company_num_employees_range: ["1-10", "11-20"]
+        # Smallest three buckets = solo operators through small local
+        # shops, still short of multi-location or franchise scale.
+        company_num_employees_range: ["1-10", "11-20", "21-50"]
         company_locations: ["United States"]
         contact_job_titles:
-          ["Owner", "Owner Operator", "Founder", "President", "General Manager"]
+          [
+            "Owner",
+            "Owner Operator",
+            "Founder",
+            "President",
+            "General Manager",
+            "CEO",
+            "Managing Partner",
+            "Co-Owner",
+            "Operations Manager",
+          ]
         email_status: ["verified"]
       max_free_results: 25
     email:
