@@ -43,7 +43,7 @@ profiles:
         # Smallest two buckets = solo operators and small local shops,
         # not multi-location or franchise players.
         company_num_employees_range: ["1-10", "11-20"]
-        company_locations: ["United States"]
+        company_locations: ["San Diego, CA", "Grand Rapids, MI"]
         contact_job_titles:
           ["Owner", "Owner Operator", "Founder", "President", "General Manager"]
         email_status: ["verified"]
