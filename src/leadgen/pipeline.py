@@ -36,11 +36,17 @@ def run(
     sheets_store.ensure_header(creds, settings.google_sheet_id)
     already_contacted = sheets_store.get_existing_emails(creds, settings.google_sheet_id)
 
-    leads = apify_source.fetch_leads(settings, profile, allowed)
+    leads = apify_source.fetch_leads(
+        settings, profile, allowed, already_contacted_count=len(already_contacted)
+    )
     new_leads = [l for l in leads if l.email.lower() not in already_contacted]
     skipped = len(leads) - len(new_leads)
     if skipped:
         logger.info("Skipping %d leads already present in the sheet", skipped)
+    # fetch_leads over-fetches by len(already_contacted) to get past leads
+    # this exact search already returned before (see its docstring) — cap
+    # back down to what was actually approved for this run.
+    new_leads = new_leads[:allowed]
 
     rows: list[SheetRow] = []
     for lead in new_leads:
